@@ -1,0 +1,48 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/Card.astro";
+
+export async function getStaticPaths() {
+  const posts = await Astro.glob("../posts/*.md");
+
+  // we return an array of objects that has a params objects in it
+  // with the field that we want to use for the URLs, which is the slug in our case
+
+  // we want to return an object, so we use ({})
+  return posts.map((post) => ({
+    params: {
+      slug: post.frontmatter.slug,
+    },
+
+    // we also want to include props
+    // so that we could get the post content and frontmatter through props
+    props: {
+      post,
+    },
+  }));
+}
+
+// we destructure this
+// Content with capital C
+const { Content, frontmatter } = Astro.props.post;
+---
+
+<!-- this is similar to nextJS --><!-- we create a page with brackets with whatever the field that the URL is connected to --><!--  --><!-- to create paths we use function getstaticpaths --><!-- OUTPUT HERE -->
+<Layout title={frontmatter.title}>
+  <section class="page-content">
+    <div class="container">
+      <Card>
+        <a class="btn" href="/blog">Go Back</a>
+        <h2>{frontmatter.title}</h2>
+        <!-- adding fields -->
+        <div>
+          Written by <strong>{frontmatter.author}</strong> on {
+            new Date(frontmatter.date).toLocaleDateString()
+          }
+        </div>
+
+        <Content />
+      </Card>
+    </div>
+  </section>
+</Layout>
